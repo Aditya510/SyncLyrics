@@ -3,23 +3,30 @@ from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 import index
 
-def playsong(m):
-    m.config(text = 'You pressed the button!')
+
+def playsong(filename, m, root):
+    m.config(text = 'Fetching Lyrics')
+    root.update()
     print("I am here")
-    index.play_song( "/Users/vishal/Desktop/Coding B/DevClub/SyncAudio/SyncLyrics/Ed Sheeran - Shape of You [Official Video].mp3", m)
+    index.play_song(filename, m, root)
 
 def main():
-    # tkinter.Tk().withdraw()
-    # filename = askopenfilename()
-    # print(filename)
 
     # m is the main/master window
     m = tkinter.Tk(screenName="SyncLyrics", className="SyncLyrics")
 
-    MyLabel = ttk.Label(m, text = 'The button has not been pressed.')
-    MyLabel.pack()
-    MyButton = ttk.Button(m, cursor="cross", text='Play', width=25, command=lambda: playsong(MyLabel))
-    MyButton.pack()
+    roottemp = tkinter.Tk()
+    roottemp.withdraw()
+    roottemp.update()
+    filename = askopenfilename(title="Select file",
+                               filetypes=(("mp3 files", "*.mp3"), ("all files", "*.*")))
+    print(filename)
+    roottemp.destroy()
+
+    MyLabel = ttk.Label(m, text = 'Play and start fetching lyrics')
+    MyLabel.grid(row=1)
+    MyButton = ttk.Button(m, cursor="cross", text='Play', width=100, command=lambda: playsong(filename, MyLabel, m))
+    MyButton.grid(row=0)
     # w = ttk.Button(m, cursor="cross", text='Close', width=25, command=m.destroy)
     # w.grid(row=2)
 
@@ -61,6 +68,9 @@ def main():
     helpmenu.add_command(label='About')
 
     m.mainloop()
+
+
+
 
 if __name__ == "__main__":
   main()

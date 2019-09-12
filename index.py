@@ -3,14 +3,16 @@ import time
 import pygame
 from bs4 import BeautifulSoup
 import tkinter
+import urllib.parse
 
-def play_song(filepath, currentlyricsline: tkinter.StringVar):
+def play_song(filepath, m, root):
     # names = os.listdir()
     names = filepath.split("/")
     item = names[-1]
     if (item[-3:]) == 'mp3':
         songname = item
     print(songname)
+    songname.replace("&","")
 
     pygame.init()
     pygame.mixer.init()
@@ -18,10 +20,10 @@ def play_song(filepath, currentlyricsline: tkinter.StringVar):
 
     pygame.mixer.music.play(0)
     start = time.time()
-    base = "https://www.rentanadviser.com/en/subtitles/subtitles4songs.aspx?src="
-    for char in songname.split():
-        base += char + '%20'
+    print(songname)
+    base = "https://www.rentanadviser.com/en/subtitles/subtitles4songs.aspx?src=" + urllib.parse.quote(songname)
 
+    print(base)
     # print(base)
     def make_soup(url):
         try:
@@ -39,10 +41,12 @@ def play_song(filepath, currentlyricsline: tkinter.StringVar):
     for item in links:
         storelinks.append(item.get('href'))  # item.text.strip())
 
+    print(storelinks[0])
     # To choose -
-    linktochoose = storelinks[1]
+    linktochoose = storelinks[0]
     srcbase = "https://www.rentanadviser.com/en/subtitles/"
-    srcbase += storelinks[0]
+    srcbase += linktochoose
+    print(srcbase)
 
     newsoup = make_soup(srcbase)
     newsoup.prettify()
@@ -74,7 +78,7 @@ def play_song(filepath, currentlyricsline: tkinter.StringVar):
     print(finaltimestamps[0][0])
     print((finaltimestamps[0][0]) - taken)
     syncfactor = 6
-    time.sleep((finaltimestamps[0][0]) + 6 - taken)
+    time.sleep((finaltimestamps[0][0]) - taken)
     print(finaltimestamps[0][1])
 
     print("I am here 2")
@@ -82,7 +86,8 @@ def play_song(filepath, currentlyricsline: tkinter.StringVar):
     for i in range(1, len(finaltimestamps)):
         time.sleep(finaltimestamps[i][0] - finaltimestamps[i - 1][0])
         print(finaltimestamps[i][0], finaltimestamps[i][1])
-        currentlyricsline.set(finaltimestamps[i][1])
+        m.config(text = finaltimestamps[i][1])
+        root.update()
 
 
 
